@@ -143,3 +143,31 @@ def Conformer(batch_size):
     lengths = torch.LongTensor([num_frame for _ in range(batch_size)])
     input = torch.randn(batch_size, num_frame, input_dim)
     return model, (input, lengths)
+
+def llama2(batch_size):
+    from transformers import LlamaForCausalLM, LlamaConfig
+    import json, os
+    # load as dict
+    config_dict = json.load(open(os.path.dirname(__file__) + '/config/llama2.json', 'r'))
+    config_dict['batch_size'] = batch_size
+    config = LlamaConfig.from_dict(config_dict)
+    model = LlamaForCausalLM(config)
+    input_ids = torch.LongTensor(np.ones([config.batch_size, config.max_position_embeddings]))
+    token_type_ids = torch.LongTensor(np.ones([config.batch_size, config.max_position_embeddings]))
+    attention_mask = torch.LongTensor(np.ones([config.batch_size, config.max_position_embeddings]))
+    inputs = (input_ids, attention_mask, token_type_ids)
+    return model, inputs
+
+def llama3(batch_size):
+    from transformers import LlamaForCausalLM, LlamaConfig
+    import json, os
+    # load as dict
+    config_dict = json.load(open(os.path.dirname(__file__) + '/config/llama3.json', 'r'))
+    config_dict['batch_size'] = batch_size
+    config = LlamaConfig.from_dict(config_dict)
+    model = LlamaForCausalLM(config)
+    input_ids = torch.LongTensor(np.ones([config.batch_size, config.max_position_embeddings]))
+    token_type_ids = torch.LongTensor(np.ones([config.batch_size, config.max_position_embeddings]))
+    attention_mask = torch.LongTensor(np.ones([config.batch_size, config.max_position_embeddings]))
+    inputs = (input_ids, attention_mask, token_type_ids)
+    return model, inputs

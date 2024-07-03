@@ -6,6 +6,7 @@ import time
 import numpy as np
 import torch
 from model.pytorch import *
+import shutil
 
 
 def tofp16model(in_file_name, out_file_name):
@@ -22,17 +23,21 @@ def torch2onnx(prefix, model, inputs, fp16):
         outputs = (outputs, )
     input_names = ["input"+str(i) for i in range(len(inputs))]
     output_names = ["output"+str(i) for i in range(len(outputs))]
+    file_dir = osp.join(prefix, "onnx")
+    if os.path.exists(file_dir):
+        shutil.rmtree(file_dir)
+    os.mkdir(file_dir)
     torch.onnx.export(
         model, inputs,
-        osp.join(prefix, "model.onnx"),
+        osp.join(file_dir, "model.onnx"),
         input_names=input_names,
         output_names=output_names,
-        export_params=True,
+        export_params=False,
         training=torch.onnx.TrainingMode.EVAL,
         do_constant_folding=False,
-        opset_version=11)
+        opset_version=14)
     if fp16:
-        tofp16model( osp.join(prefix, "model.onnx"),  osp.join(prefix, "model.onnx"))
+        tofp16model( osp.join(file_dir, "model.onnx"),  osp.join(file_dir, "model.onnx"))
     feed_dict = dict(zip(input_names, inputs))
     np.savez(osp.join(prefix, "inputs.npz"), **feed_dict)
 
@@ -62,7 +67,7 @@ if __name__ == "__main__":
     parser.add_argument("model", type=str)
     parser.add_argument("--bs", type=int, default=1)
     parser.add_argument("--prefix", type=str, default="temp")
-    parser.add_argument("--fp16", action="store_true", default=False)
+    parser.add_argument("--fp16", action="store_true", default=True)
     parser.add_argument("--run_torch", action="store_true", default=False)
     args = parser.parse_args()
     assert (args.model in globals()), "Model {} not found.".format(args.model)

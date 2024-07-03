@@ -60,8 +60,8 @@ def profile_welder(prefix, inputs, outputs):
     while time.time() - st < 1.0:
         get_runtime() # warmup
 
-    print("Running 100 iterations ...")
-    times = [get_runtime() for _ in range(100)]
+    print("Running 10 iterations ...")
+    times = [get_runtime() for _ in range(10)]
     print(f"avg: {np.mean(times)} ms")
     print(f"min: {np.min(times)} ms")
     print(f"max: {np.max(times)} ms")

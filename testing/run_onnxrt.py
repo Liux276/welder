@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import argparse
 import os
 import time
@@ -20,7 +21,7 @@ def ref_output(onnx_model_path, device):
             ('CUDAExecutionProvider', {
                 'device_id': device,
                 'arena_extend_strategy': 'kNextPowerOfTwo',
-                'gpu_mem_limit': 8 * 1024 * 1024 * 1024,
+                'gpu_mem_limit': 23 * 1024 * 1024 * 1024,
                 'cudnn_conv_algo_search': 'EXHAUSTIVE',
                 'do_copy_in_default_stream': True,
             })
@@ -53,7 +54,7 @@ def ref_output(onnx_model_path, device):
     st = time.time()
     while time.time() - st < 1.0:
         get_runtime() # warmup
-    times = [get_runtime() for i in range(100)]
+    times = [get_runtime() for i in range(10)]
     print(f"avg: {np.mean(times)} ms")
     print(f"min: {np.min(times)} ms")
     print(f"max: {np.max(times)} ms")
@@ -62,7 +63,7 @@ def ref_output(onnx_model_path, device):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--prefix', type=str, default="temp")
-    parser.add_argument('--device', type=int, default=0)
+    parser.add_argument('--device', type=int, default=3)
     args = parser.parse_args()
 
     prefix = args.prefix
